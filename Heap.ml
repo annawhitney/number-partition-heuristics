@@ -82,7 +82,7 @@ struct
     type t = int
 
     let compare n m =
-        let diff = n.wt - m.wt in
+        let diff = n - m in
         (* Reversed to get max instead of min. *)
         if diff < 0 then Greater
         else if diff > 0 then Less

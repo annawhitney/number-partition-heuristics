@@ -42,6 +42,18 @@ let foldi t ~init ~f =
     in
     loop 0 init
 
+exception Finally of exn * exn
+
+let protectx ~f x ~(finally : _ -> unit) =
+    let res =
+        try f x
+        with exn ->
+            (try finally x with final_exn -> raise (Finally (exn, final_exn)));
+            raise exn
+    in
+    finally x;
+    res
+
 (*let unzip lst =*)
     (*let rec loop lst l1 l2 =*)
         (*match lst with*)

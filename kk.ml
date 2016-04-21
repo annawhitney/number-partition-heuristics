@@ -4,7 +4,7 @@ open Core_in_channel
 let kk (lst : int list) : int =
     (* Insert all ints into heap. *)
     let l = List.length lst in
-    let start_hp = List.fold_left MaxIntBH.insert lst (MaxIntBH.empty l) in
+    let start_hp = List.fold_left MaxIntBH.insert (MaxIntBH.empty l) lst in
 
     (* Apply differencing recursively. *)
     let rec kk_step (hp : MaxIntBH.heap) : int =
@@ -23,4 +23,4 @@ let str_nums = read_lines filename ;;
 let nums = List.map int_of_string str_nums ;;
 
 let residue = kk nums ;;
-Printf.printf residue ;;
+Printf.printf "%i\n" residue ;;

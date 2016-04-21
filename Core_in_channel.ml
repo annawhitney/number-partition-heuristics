@@ -4,7 +4,8 @@
  * since Core provides efficient versions of many standard functions and is
  * not available on the nice.fas.harvard.edu machines. *)
 (*****************************************************************************)
-module String = Core_string
+(*module String = Core_string*)
+open Core
 
 type t = in_channel
 
@@ -22,7 +23,7 @@ let create ?(binary = true) file =
 
 let close = Pervasives.close_in
 
-let with_file ?binary file ~f = Exn.protectx (create ?binary file) ~f ~finally:close
+let with_file ?binary file ~f = protectx (create ?binary file) ~f ~finally:close
 
 let may_eof f = try Some (f ()) with End_of_file -> None
 
@@ -59,10 +60,10 @@ let input_line ?(fix_win_eol = true) t =
       let remove_trailing_return =
         fix_win_eol
         && String.length line > 0
-        && String.nget line (-1) = '\r'
+        && line.[(String.length line) - 1] = '\r'
       in
       if remove_trailing_return then
-        Some (String.slice line 0 (-1))
+        Some (String.sub line 0 ((String.length line) - 1))
       else
         Some line
 ;;
