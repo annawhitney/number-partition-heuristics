@@ -1,6 +1,6 @@
 all: kk
 
-FILES = kk.ml
+FILES = Core.ml Heap.ml Core_in_channel.ml kk.ml
 
 kk: $(FILES)
 	ocamlbuild -lib unix kk.native;

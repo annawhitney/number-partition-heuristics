@@ -3,7 +3,6 @@ open Core
 module type HEAP =
 sig
     type elt
-    type index
     type heap
 
     val empty : int -> heap
@@ -13,8 +12,6 @@ sig
     val insert : heap -> elt -> heap
 
     val extract_min : heap -> (elt * heap)
-
-    val decrease_key : heap -> index -> elt -> (index * heap)
 end
 
 module type COMPARABLE =
@@ -24,33 +21,20 @@ sig
     val empty_val : t
 end
 
-module BinaryHeap(C: COMPARABLE) : (HEAP with type elt=C.t with type index=int) =
+module BinaryHeap(C: COMPARABLE) : (HEAP with type elt=C.t) =
 struct
     type elt = C.t
     type index = int
     (* The heap stores its first empty index/number of elements + 1. *)
-    type heap = (index, elt array)
+    type heap = index * elt array
 
     (* 0th position of array ignored for ease of arithmetic. *)
     let empty n = (1, Array.make (n + 1) C.empty_val)
 
     let is_empty hp = let (i,_) = hp in i = 1
 
-    let insert hp e =
-        let (i, a) = hp in
-        let _, h = percolate_up ((i + 1), a) i e in h
-
-    let extract_min hp =
-        let (i, a) = hp in
-        let min = a.(1) in
-        (min, (percolate_down ((i-1), a) 1 a.(i-1)))
-
-    let decrease_key hp idx e =
-        let hp = (i, a) in
-        percolate_up hp idx e
-
     let rec percolate_up hp idx e =
-        let hp = (i, a) in
+        let (i, a) = hp in
         if idx = 1 then 
             let _ = a.(idx) <- e in (idx, (i, a))
         else
@@ -82,19 +66,29 @@ struct
                             let _ = a.(idx) <- a.(child+1) in
                             percolate_down (i, a) (child+1) e
                     | Equal | Greater -> let _ = a.(idx) <- e in (i, a))
+
+    let insert hp e =
+        let (i, a) = hp in
+        let _, h = percolate_up ((i + 1), a) i e in h
+
+    let extract_min hp =
+        let (i, a) = hp in
+        let min = a.(1) in
+        (min, (percolate_down ((i-1), a) 1 a.(i-1)))
 end
 
-module IntComparable : (COMPARABLE with type t=int) =
+module MaxIntComparable : (COMPARABLE with type t=int) =
 struct
     type t = int
 
     let compare n m =
         let diff = n.wt - m.wt in
-        if diff < 0 then Less
-        else if diff > 0 then Greater
+        (* Reversed to get max instead of min. *)
+        if diff < 0 then Greater
+        else if diff > 0 then Less
         else Equal
 
     let empty_val = 0
 end
 
-module IntBH = BinaryHeap(IntComparable) ;;
+module MaxIntBH = BinaryHeap(MaxIntComparable) ;;
