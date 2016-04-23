@@ -1,4 +1,6 @@
+open Core
 open Helpers
+open Kk
 
 module type SOLUTION =
 sig
@@ -60,3 +62,6 @@ struct
     let get_residue s v =
         let svs = zip_fast (Array.to_list s) v in
         let sums_by_part = List.fold_left group_by_partition [] svs in
+        let _, sums = unzip sums_by_part in
+        kk sums
+end
