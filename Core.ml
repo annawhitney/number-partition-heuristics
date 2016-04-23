@@ -54,26 +54,12 @@ let protectx ~f x ~(finally : _ -> unit) =
     finally x;
     res
 
-(*let unzip lst =*)
-    (*let rec loop lst l1 l2 =*)
-        (*match lst with*)
-        (*| [] -> (List.rev l1, List.rev l2)*)
-        (*| (x, y) :: tl -> loop tl (x :: l1) (y :: l2)*)
-    (*in*)
-    (*loop lst [] []*)
+let unzip lst =
+    let rec loop lst l1 l2 =
+        match lst with
+        | [] -> (List.rev l1, List.rev l2)
+        | (x, y) :: tl -> loop tl (x :: l1) (y :: l2)
+    in
+    loop lst [] []
 
-(*let transpose =*)
-    (*let rec transpose_aux t rev_columns =*)
-    (*match partition_map t ~f:(function [] -> `Snd () | x :: xs -> `Fst*)
-    (*(x, xs)) with*)
-    (*| (_ :: _, _ :: _) -> None*)
-    (*| ([], _) -> Some (rev_append rev_columns [])*)
-    (*| (heads_and_tails, []) ->*)
-    (*let (column, trimmed_rows) = unzip*)
-    (*heads_and_tails in*)
-    (*transpose_aux trimmed_rows (column*)
-    (*:: rev_columns)*)
-    (*in*)
-    (*fun t ->*)
-    (*transpose_aux t []*)
 (*****************************************************************************)
