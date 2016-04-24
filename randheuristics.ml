@@ -1,5 +1,13 @@
 open Solution
 open Helpers
+open Core_in_channel
+
+let soln_flag = Sys.argv.(1) ;;
+let soln = match soln_flag with
+        | "S" -> (module StandardSoln : SOLUTION)
+        | "P" -> (module PrepartitionSoln : SOLUTION)
+;;
+let module Soln = (val soln : SOLUTION) ;;
 
 let rep_random (lst : int list) : int =
     let l = List.length lst in
@@ -43,13 +51,16 @@ let sim_anneal (lst : int list) (t_cool : int -> float) : int =
 ;;
 
 let main () =
-    let soln_flag = Sys.argv.(1) in
-    let soln = match soln_flag with
-            | "S" -> (module StandardSoln : SOLUTION)
-            | "P" -> (module PrepartitionSoln : SOLUTION)
-    in
-    let module Soln = (val soln : SOLUTION)
-    in
+    let filename = Sys.argv.(2) in
+    let str_nums = read_lines filename in
+    let nums = List.map int_of_string str_nums in
 
+    let rr = rep_random nums in
+    let hc = hill_climb nums in
+    let sa = sim_anneal nums in
+
+    Printf.printf "%i & %i & %i\n" rr hc sa
 ;;
 
+main () ;;
+    
