@@ -1,3 +1,4 @@
+open Core
 
 let get_one_index (l : int) : int =
     let () = Random.self_init () in
@@ -17,7 +18,14 @@ let neg_or_pos_one () : int =
     let () = Random.self_init () in
     if Random.bool () then 1 else (-1)
 
+let with_prob (p : float) : bool =
+    let () = Random.self_init () in Random.float 1 < p
+
 let zip_fast l1 l2 = List.rev_map2 (fun a b -> (a,b)) l1 l2
 
-let group_by_partition (acc : (int * int) list) : (int * int) list =
-
+let group_by_partition (acc : (int * int) list) (sv : (int * int)) : (int * int) list =
+    let (s, v) = sv in
+    if List.exists (fun (a,_) -> a = s) acc then
+        List.map (fun (a,b) -> if a = s then (a,b+v) else (a,b)) acc
+    else
+        sv :: acc

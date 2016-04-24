@@ -1,4 +1,5 @@
 open Solution
+open Helpers
 
 let rep_random (lst : int list) : int =
     let l = List.length lst in
@@ -23,6 +24,22 @@ let hill_climb (lst : int list) : int =
     in
     let first_s = Soln.generate l in
     uphill 25000 first_s (Soln.get_residue first_s)
+;;
+
+let sim_anneal (lst : int list) (t_cool : int -> float) : int =
+    let l = List.length lst in
+    let rec anneal iter curr_s curr_res =
+        if iter = 0 then curr_res else
+        let s = Soln.random_move curr_s in
+        let new_res = Soln.get_residue s in
+        if new_res < curr_res then anneal (iter - 1) s new_res
+        else
+            let p = exp (-. (float_of_int (new_res - curr_res)) /. (t_cool iter)) in
+            if with_prob p then anneal (iter - 1) s new_res
+            else anneal (iter - 1) curr_s curr_res
+    in
+    let first_s = Soln.generate l in
+    anneal 25000 first_s (Soln.get_residue first_s)
 ;;
 
 let main () =
