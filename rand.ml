@@ -51,19 +51,30 @@ let sim_anneal (lst : int list) (t_cool : int -> float) : int =
     anneal 25000 first_s (Soln.get_residue first_s lst)
 ;;
 
-let main () =
+let rand () =
+    let t iter = (10. ** 10.) *. (0.8 ** (float_of_int iter /. 300.)) in
+
     let filename = Sys.argv.(2) in
     let str_nums = read_lines filename in
     let nums = List.map int_of_string str_nums in
 
-    let t iter = (10. ** 10.) * (0.8 ** (float_of_int iter /. 300.)) in
+    let () = Random.self_init () in
 
-    let rr = rep_random nums in
-    let hc = hill_climb nums in
-    let sa = sim_anneal nums t in
+    if Array.length Sys.argv > 3 then
+        if Sys.argv.(3) = "time" then
+        let t_rr, rr = time rep_random nums in
+        let t_hc, hc = time hill_climb nums in
+        let t_sa, sa = time (sim_anneal nums) t in
 
-    Printf.printf "%i & %i & %i\n" rr hc sa
+        Printf.printf "%i %f & %i %f & %i %f\n" rr t_rr hc t_hc sa t_sa
+        else failwith "Extraneous arguments."
+    else
+        let rr = rep_random nums in
+        let hc = hill_climb nums in
+        let sa = sim_anneal nums t in
+
+        Printf.printf "%i & %i & %i\n" rr hc sa
 ;;
 
-main () ;;
+rand () ;;
     

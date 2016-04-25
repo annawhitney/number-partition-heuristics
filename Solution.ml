@@ -1,6 +1,6 @@
 open Core
 open Helpers
-open Kk
+open Karmarkar_karp
 
 module type SOLUTION =
 sig
@@ -37,7 +37,7 @@ struct
     let get_residue s v =
         let svs = zip_fast (Array.to_list s) v in
         let prods = List.rev_map (fun (a,b) -> a * b) svs in
-        List.fold_left (+) 0 prods
+        abs (List.fold_left (+) 0 prods)
 end
 
 module PrepartitionSoln : (SOLUTION with type soln = int array and type vals = int list) =
