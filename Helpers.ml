@@ -19,7 +19,7 @@ let neg_or_pos_one () : int =
     if Random.bool () then 1 else (-1)
 
 let with_prob (p : float) : bool =
-    let () = Random.self_init () in Random.float 1 < p
+    let () = Random.self_init () in Random.float 1. < p
 
 let zip_fast l1 l2 = List.rev_map2 (fun a b -> (a,b)) l1 l2
 

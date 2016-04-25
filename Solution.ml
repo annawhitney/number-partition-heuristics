@@ -17,8 +17,7 @@ sig
     val get_residue : soln -> vals -> int
 end
 
-module StandardSoln : (SOLUTION with type soln = int array with type vals =
-int list) =
+module StandardSoln : (SOLUTION with type soln = int array and type vals = int list) =
 struct
     type soln = int array
     type vals = int list
@@ -41,7 +40,7 @@ struct
         List.fold_left (+) 0 prods
 end
 
-module PrepartitionSoln : (SOLUTION with type soln = int array with type vals = int list) =
+module PrepartitionSoln : (SOLUTION with type soln = int array and type vals = int list) =
 struct
     type soln = int array
     type vals = int list
