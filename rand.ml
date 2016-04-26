@@ -16,8 +16,12 @@ let rep_random (lst : int list) : int =
         if iter = 0 then best_res else
         let s = Soln.generate l in
         let new_res = Soln.get_residue s lst in
-        if new_res < best_res then next_random (iter - 1) new_res
-        else next_random (iter - 1) best_res
+        if new_res < best_res then
+            (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) new_res else () in*)
+            next_random (iter - 1) new_res
+        else
+            (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) best_res else () in*)
+            next_random (iter - 1) best_res
     in
     next_random 25000 (Soln.get_residue (Soln.generate l) lst)
 ;;
@@ -28,8 +32,12 @@ let hill_climb (lst : int list) : int =
         if iter = 0 then curr_res else
         let s = Soln.random_move curr_s in
         let new_res = Soln.get_residue s lst in
-        if new_res < curr_res then uphill (iter - 1) s new_res
-        else uphill (iter - 1) curr_s curr_res
+        if new_res < curr_res then
+            (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) new_res else () in*)
+            uphill (iter - 1) s new_res
+        else
+            (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 -iter) curr_res else () in*)
+            uphill (iter - 1) curr_s curr_res
     in
     let first_s = Soln.generate l in
     uphill 25000 first_s (Soln.get_residue first_s lst)
@@ -37,18 +45,29 @@ let hill_climb (lst : int list) : int =
 
 let sim_anneal (lst : int list) (t_cool : int -> float) : int =
     let l = List.length lst in
-    let rec anneal iter curr_s curr_res =
-        if iter = 0 then curr_res else
+    let rec anneal iter curr_s curr_res best_res =
+        if iter = 0 then best_res else
         let s = Soln.random_move curr_s in
         let new_res = Soln.get_residue s lst in
-        if new_res < curr_res then anneal (iter - 1) s new_res
+        if new_res < curr_res then
+            if new_res < best_res then
+                (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) new_res else () in*)
+                anneal (iter - 1) s new_res new_res
+            else
+                (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) best_res else () in*)
+                anneal (iter - 1) s new_res best_res
         else
             let p = exp (-. (float_of_int (new_res - curr_res)) /. (t_cool iter)) in
-            if with_prob p then anneal (iter - 1) s new_res
-            else anneal (iter - 1) curr_s curr_res
+            if with_prob p then
+                (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) best_res else () in*)
+                anneal (iter - 1) s new_res best_res
+            else
+                (*let () = if iter mod 500 = 0 then Printf.printf "(%i,%i)" (25000 - iter) best_res else () in*)
+                anneal (iter - 1) curr_s curr_res best_res
     in
     let first_s = Soln.generate l in
-    anneal 25000 first_s (Soln.get_residue first_s lst)
+    let first_res = Soln.get_residue first_s lst in
+    anneal 25000 first_s first_res first_res
 ;;
 
 let rand () =
@@ -66,14 +85,18 @@ let rand () =
         let t_hc, hc = time hill_climb nums in
         let t_sa, sa = time (sim_anneal nums) t in
 
-        Printf.printf "%i %f & %i %f & %i %f\n" rr t_rr hc t_hc sa t_sa
+        Printf.printf "%i & %f & %i & %f & %i & %f\n" rr t_rr hc t_hc sa t_sa
         else failwith "Extraneous arguments."
     else
         let rr = rep_random nums in
+        (*let () = print_newline () in*)
         let hc = hill_climb nums in
+        (*let () = print_newline () in*)
         let sa = sim_anneal nums t in
+        (*let () = print_newline () in*)
 
-        Printf.printf "%i & %i & %i\n" rr hc sa
+        Printf.printf "Repeated Random: %i\nHill-Climbing: %i\nSimulated
+        Annealing: %i\n" rr hc sa
 ;;
 
 rand () ;;

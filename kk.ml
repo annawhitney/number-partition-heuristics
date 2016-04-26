@@ -22,7 +22,7 @@ let main () : unit =
         let str_nums = read_lines filename in
         let nums = List.map int_of_string str_nums in
         let residue = kk nums in
-        Printf.printf "%i\n" residue
+        Printf.printf "Karmarkar-Karp: %i\n" residue
 ;;
 
 main () ;;

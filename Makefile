@@ -1,4 +1,4 @@
-all: kk
+all: kk rand
 
 FILES = Core.ml Heap.ml Core_in_channel.ml Karmarkar_karp.ml 
 
